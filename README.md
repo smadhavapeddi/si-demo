@@ -56,6 +56,48 @@ public/
 .env.example       # Template — copy to .env
 ```
 
+## Architecture & data flow
+
+The demo has three pieces: the browser UI, the local Node demo server, and DigitalOcean Inference.
+
+- **Browser** — Loads static assets from the demo server (`/` serves `public/index.html`). All JavaScript calls are **same-origin** to `/api/*` only. The Inference host URL and API key are **not** exposed to the client.
+- **Demo server** (`server.js`) — An `node:http` server that serves files under `public/` and proxies JSON requests to `https://inference.do-ai.run` using `Authorization: Bearer ${DO_INFERENCE_KEY}` (see the shared `doFetch` helper). Routing for `/api/*` vs static files is centralized at the bottom of `server.js`.
+- **DigitalOcean Inference** — OpenAI-compatible HTTP API: `/v1/models`, `/v1/chat/completions`, and `/v1/images/generations`.
+
+```mermaid
+flowchart LR
+  Browser[Browser SPA]
+  DemoServer[Demo server Node.js]
+  InferenceAPI["Inference inference.do-ai.run"]
+  Browser -->|"same-origin GET/POST /api/*"| DemoServer
+  DemoServer -->|"HTTPS plus Bearer API key"| InferenceAPI
+```
+
+The Inference API key exists **only** on the demo server process; the browser never sees `DO_INFERENCE_KEY`.
+
+**Compare tab** — The browser sends a single `POST /api/compare` with a `models` array and shared `messages`. The server runs **N parallel** `POST /v1/chat/completions` calls (one per model via `Promise.all`) and returns one JSON payload `{ results: [...] }` aggregating status, latency, and body per model.
+
+### Request paths by feature
+
+Paths below match the **Endpoints** section; use that table for method and upstream path details.
+
+| Feature | Browser → demo server | Demo server → Inference |
+| --- | --- | --- |
+| Model catalog | `GET /api/models` | `GET /v1/models` |
+| Single chat | `POST /api/chat` | `POST /v1/chat/completions` |
+| Router tab | Same as single chat (`POST /api/chat` with the router model id) | Same |
+| Compare | `POST /api/compare` (body includes `models[]`, shared messages) | N × `POST /v1/chat/completions` in parallel |
+| Image | `POST /api/image` | `POST /v1/images/generations` |
+| Boot config / defaults | `GET /api/config` | *(none — JSON built from `PUBLIC_CONFIG` in `server.js`)* |
+
+### Response shaping
+
+For `/api/chat` and `/api/image`, the server parses Inference JSON when possible and adds **`latency_ms`** measured server-side around the upstream round trip. For `/api/compare`, each entry in `results` includes **`latency_ms`** for that model’s request. If Inference returns a non-JSON body, the handlers still respond with JSON when they can (for example `{ error: "<raw text>", latency_ms }` on chat/image).
+
+### Trust boundary
+
+**`DO_INFERENCE_KEY` never reaches the browser**, but anyone who can reach the demo server can trigger Inference calls through it—treat that server as the trust boundary (local demos or deployments you lock down with network policy or auth in front of the app).
+
 ## Endpoints
 
 The frontend talks to the local server, which proxies through to Inference using the API key (the key never reaches the browser).
