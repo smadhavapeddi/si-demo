@@ -7,349 +7,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ink: #0b1220;
-    --ink-soft: #3a4152;
-    --muted: #7a8297;
-    --line: #e7eaf0;
-    --line-strong: #d6dbe5;
-    --bg: #ffffff;
-    --bg-soft: #f7f9fc;
-    --accent: #0069ff;
-    --accent-soft: #e7f0ff;
-    --accent-2: #00c39a;
-    --warn: #c07a00;
-    --err: #c2364d;
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--bg); color: var(--ink);
-    font-family: 'Inter', -apple-system, system-ui, sans-serif;
-    font-feature-settings: "ss01","cv11";
-    -webkit-font-smoothing: antialiased;
-  }
-  code, pre, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 22px 36px;
-    border-bottom: 1px solid var(--line);
-  }
-  header .brand { display: flex; align-items: center; gap: 14px; font-size: 15px; letter-spacing: .01em; }
-  header .brand .do-logo { height: 28px; width: auto; display: block; }
-  header .brand .brand-sep { color: var(--line-strong); font-weight: 400; }
-  header .brand .brand-demo { color: var(--ink-soft); font-weight: 500; }
-  header .tag {
-    font-size: 11px; text-transform: uppercase; letter-spacing: .12em;
-    color: var(--muted); font-weight: 600;
-  }
-
-  .tabs {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 36px; border-bottom: 1px solid var(--line);
-  }
-  .tabs-left { display: flex; gap: 4px; }
-  .tab {
-    padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--muted);
-    border: none; background: transparent; cursor: pointer;
-    border-bottom: 2px solid transparent; margin-bottom: -1px;
-  }
-  .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
-  .tab:hover:not(.active) { color: var(--ink-soft); }
-
-  .glossary-toggle {
-    background: transparent; border: 1px solid var(--line-strong);
-    padding: 6px 12px; border-radius: 8px; cursor: pointer;
-    font: inherit; font-size: 12px; font-weight: 500; color: var(--ink-soft);
-    margin: 8px 0; display: inline-flex; align-items: center; gap: 6px;
-  }
-  .glossary-toggle:hover { background: var(--bg-soft); color: var(--ink); border-color: var(--ink-soft); }
-
-  body { padding-right: 320px; transition: padding-right .25s ease; }
-
-  main { padding: 28px 36px 80px; max-width: 1400px; margin: 0 auto; }
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  aside.sidebar {
-    position: fixed; top: 0; right: 0; bottom: 0; width: 320px;
-    background: var(--bg-soft);
-    border-left: 1px solid var(--line);
-    overflow-y: auto; overscroll-behavior: contain;
-    z-index: 15;
-    display: flex; flex-direction: column;
-  }
-  .sb-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 22px;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg);
-    position: sticky; top: 0; z-index: 1;
-  }
-  .sb-header .sb-title {
-    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--muted); font-weight: 700;
-  }
-  .sb-header .sb-toggle {
-    background: transparent; border: 1px solid var(--line-strong);
-    width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
-    color: var(--ink-soft); font-size: 14px; line-height: 1;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .sb-header .sb-toggle:hover { background: var(--bg-soft); color: var(--ink); }
-
-  .sb-body { padding: 8px 18px 24px; }
-  .sb-intro {
-    font-size: 13px; line-height: 1.5; color: var(--ink-soft);
-    padding: 14px 4px 8px;
-  }
-
-  .sb-group-title {
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--accent); font-weight: 700;
-    margin: 18px 4px 8px;
-  }
-
-  .sb-term { padding: 10px 12px; border-radius: 8px; transition: background .15s; }
-  .sb-term:hover { background: white; }
-  .sb-term + .sb-term { margin-top: 2px; }
-  .sb-term dt {
-    font-size: 12.5px; font-weight: 700; color: var(--ink);
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  }
-  .sb-term dt code {
-    font-size: 10.5px; padding: 1px 5px; background: var(--accent-soft);
-    color: var(--accent); border-radius: 4px; font-weight: 500;
-  }
-  .sb-term dd {
-    margin: 4px 0 0; font-size: 12px; line-height: 1.55; color: var(--ink-soft);
-  }
-  .sb-term dd strong { color: var(--ink); font-weight: 600; }
-  .sb-term dd code {
-    font-size: 11px; padding: 1px 4px; background: var(--bg);
-    border: 1px solid var(--line); border-radius: 3px; color: var(--ink-soft);
-  }
-
-  body.sidebar-closed { padding-right: 0; }
-  body.sidebar-closed aside.sidebar { transform: translateX(100%); }
-  aside.sidebar { transition: transform .25s ease; }
-
-  @media (max-width: 1100px) {
-    body { padding-right: 0; }
-    aside.sidebar {
-      position: static; width: auto;
-      border-left: none; border-top: 1px solid var(--line);
-    }
-    .sb-header { position: static; }
-    .glossary-toggle { display: none; }
-  }
-
-  .eyebrow {
-    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--muted); font-weight: 700; margin-bottom: 8px;
-  }
-  h1 {
-    font-size: 28px; font-weight: 700; margin: 0 0 6px;
-    letter-spacing: -0.01em;
-  }
-  .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 720px; }
-
-  .grid {
-    display: grid; gap: 24px;
-    grid-template-columns: minmax(320px, 420px) 1fr;
-  }
-  @media (max-width: 980px) {
-    .grid { grid-template-columns: 1fr; }
-  }
-
-  .card {
-    background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
-    padding: 20px;
-  }
-  .card h3 {
-    font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--muted); margin: 0 0 14px; font-weight: 700;
-  }
-
-  label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin: 12px 0 6px; }
-  select, textarea, input[type="text"], input[type="number"] {
-    width: 100%; font: inherit; font-size: 14px;
-    padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 10px;
-    background: var(--bg); color: var(--ink);
-    outline: none; transition: border-color .15s, box-shadow .15s;
-  }
-  select:focus, textarea:focus, input:focus {
-    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
-  }
-  textarea { min-height: 120px; resize: vertical; font-family: inherit; }
-  .row { display: flex; gap: 10px; }
-  .row > * { flex: 1; }
-
-  button.primary {
-    margin-top: 18px; width: 100%;
-    padding: 12px 16px; font: inherit; font-size: 14px; font-weight: 600;
-    background: var(--accent); color: white; border: none; border-radius: 10px;
-    cursor: pointer; transition: background .15s;
-  }
-  button.primary:hover { background: #0057d9; }
-  button.primary:disabled { background: var(--muted); cursor: not-allowed; }
-
-  .result {
-    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 14px;
-    padding: 20px; min-height: 260px;
-  }
-  .result .meta {
-    display: flex; gap: 20px; flex-wrap: wrap;
-    font-size: 12px; color: var(--muted);
-    padding-bottom: 14px; border-bottom: 1px dashed var(--line-strong);
-    margin-bottom: 14px;
-  }
-  .result .meta strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .result .content {
-    font-size: 14.5px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;
-  }
-  .result.error .content { color: var(--err); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-  .placeholder { color: var(--muted); font-style: italic; }
-
-  .models-picker {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    max-height: 340px; overflow-y: auto;
-    border: 1px solid var(--line); border-radius: 10px; padding: 10px;
-    background: var(--bg-soft);
-  }
-  .models-picker label {
-    display: flex; align-items: center; gap: 8px; margin: 0;
-    font-size: 12.5px; font-weight: 500; color: var(--ink);
-    padding: 6px 8px; border-radius: 6px; cursor: pointer;
-  }
-  .models-picker label:hover { background: var(--accent-soft); }
-  .models-picker input[type="checkbox"] { width: auto; margin: 0; accent-color: var(--accent); }
-
-  .compare-grid {
-    display: grid; gap: 14px;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    margin-top: 20px;
-  }
-  .compare-card {
-    background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
-    padding: 16px; display: flex; flex-direction: column; min-height: 200px;
-  }
-  .compare-card .model-name {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
-    color: var(--ink); padding: 4px 8px; background: var(--accent-soft);
-    border-radius: 6px; display: inline-block; width: fit-content; margin-bottom: 10px;
-  }
-  .compare-card .stats {
-    display: flex; gap: 14px; font-size: 11px; color: var(--muted);
-    font-variant-numeric: tabular-nums; margin-bottom: 10px;
-    padding-bottom: 10px; border-bottom: 1px dashed var(--line);
-  }
-  .compare-card .stats strong { color: var(--ink); font-weight: 600; font-size: 13px; }
-  .compare-card .body {
-    font-size: 13px; line-height: 1.55; white-space: pre-wrap; word-wrap: break-word;
-    flex: 1; color: var(--ink-soft);
-  }
-  .compare-card.error .body { color: var(--err); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-  .compare-card.winner { border-color: var(--accent-2); box-shadow: 0 0 0 1px var(--accent-2); }
-  .compare-card.winner .stats strong.lat { color: var(--accent-2); }
-
-  .loading {
-    display: inline-block; width: 12px; height: 12px;
-    border: 2px solid var(--line-strong); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin .7s linear infinite;
-    vertical-align: middle; margin-left: 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .hint {
-    font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5;
-  }
-  .hint code { background: var(--bg-soft); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
-
-  .prompt-preset {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
-  }
-  .prompt-preset button {
-    font: inherit; font-size: 11px; padding: 4px 9px; border-radius: 20px;
-    background: var(--bg-soft); color: var(--ink-soft); border: 1px solid var(--line-strong);
-    cursor: pointer;
-  }
-  .prompt-preset button:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-  .prompt-preset button.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-  /* Router tab */
-  .routed-to {
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-    padding: 10px 14px; margin: -20px -20px 14px;
-    background: linear-gradient(90deg, var(--accent-soft), #f4f8ff);
-    border-radius: 14px 14px 0 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .rt-label {
-    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--accent); font-weight: 700;
-  }
-  .rt-model {
-    font-size: 13.5px; font-weight: 600; color: var(--ink);
-    padding: 3px 10px; background: white; border: 1px solid var(--accent);
-    border-radius: 6px;
-  }
-  .rt-expected {
-    margin-left: auto; font-size: 11px; color: var(--muted);
-  }
-  .rt-expected strong { color: var(--ink-soft); font-weight: 600; }
-
-  .router-history {
-    margin-top: 20px; padding: 16px 18px;
-    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
-  }
-  .rh-title {
-    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--muted); font-weight: 700; margin-bottom: 10px;
-  }
-  .rh-list { display: flex; flex-direction: column; gap: 6px; }
-  .rh-item {
-    display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
-    font-size: 12.5px; padding: 8px 10px; background: white;
-    border: 1px solid var(--line); border-radius: 8px;
-  }
-  .rh-item .rh-task { font-weight: 600; color: var(--ink); min-width: 90px; }
-  .rh-item .rh-model {
-    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--accent);
-    background: var(--accent-soft); padding: 2px 8px; border-radius: 5px;
-  }
-  .rh-item .rh-stats { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 11.5px; }
-
-  /* Image tab */
-  .image-result { min-height: 360px; }
-  .image-output {
-    display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    margin-top: 6px;
-  }
-  .image-output .placeholder {
-    grid-column: 1 / -1;
-    padding: 80px 20px; text-align: center;
-    background: var(--bg); border: 1px dashed var(--line-strong); border-radius: 10px;
-  }
-  .img-card {
-    background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
-    overflow: hidden; display: flex; flex-direction: column;
-  }
-  .img-card img { width: 100%; height: auto; display: block; }
-  .img-card .img-actions {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 10px; font-size: 11px; color: var(--muted);
-    border-top: 1px solid var(--line);
-  }
-  .img-card .img-actions a {
-    color: var(--accent); text-decoration: none; font-weight: 600;
-  }
-  .img-card .img-actions a:hover { text-decoration: underline; }
-</style>
+<link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
+
+<div id="access-gate" class="access-gate" hidden>
+  <div class="access-gate-card">
+    <h2 class="access-gate-title">Enter access password</h2>
+    <p class="access-gate-sub">This demo requires a password for this browser tab.</p>
+    <form id="access-gate-form">
+      <label for="access-password">Password</label>
+      <input type="password" id="access-password" name="password" autocomplete="current-password" required />
+      <p id="access-gate-error" class="access-gate-error" role="alert"></p>
+      <button type="submit" class="primary">Unlock</button>
+    </form>
+  </div>
+</div>
 
 <header>
   <div class="brand">
@@ -357,8 +30,18 @@
     <span class="brand-sep">·</span>
     <span class="brand-demo">Inference Demo</span>
   </div>
-  <div class="tag" data-cfg="inferenceHost">—</div>
+  <div class="header-actions">
+    <button type="button" class="sign-out-btn" id="sign-out" hidden>Sign out</button>
+    <div class="tag" data-cfg="inferenceHost">—</div>
+  </div>
 </header>
+
+<div id="backend-warning" class="backend-warning" hidden role="alert">
+  <strong>Demo API not reachable.</strong>
+  This UI must be opened through the Node server so <code>/api/*</code> exists (including <code>POST /api/async-invoke</code>).
+  From the project folder run <code>npm start</code>, then use <code>http://localhost:3000</code>.
+  Opening only <code>public/index.html</code> or using a static server on port 3000 will show this page but API calls will 404.
+</div>
 
 <div class="tabs">
   <div class="tabs-left">
@@ -366,6 +49,7 @@
     <button class="tab" data-panel="compare">Compare</button>
     <button class="tab" data-panel="router">Router</button>
     <button class="tab" data-panel="image">Images</button>
+    <button class="tab" data-panel="audio">Audio</button>
   </div>
   <button class="glossary-toggle" id="glossary-toggle" aria-pressed="true">
     <span id="glossary-toggle-label">Hide glossary</span>
@@ -538,13 +222,8 @@
         <h3>Request</h3>
 
         <label for="i-model">Model</label>
-        <select id="i-model">
-          <option value="openai-gpt-image-1">openai-gpt-image-1</option>
-          <option value="openai-gpt-image-1.5">openai-gpt-image-1.5</option>
-          <option value="fal-ai/flux/schnell">fal-ai/flux/schnell</option>
-          <option value="fal-ai/fast-sdxl">fal-ai/fast-sdxl</option>
-        </select>
-        <div class="hint"><code>gpt-image</code> models ship enabled by default. <code>fal-ai/*</code> may need enablement on your account.</div>
+        <select id="i-model"></select>
+        <div class="hint">Pulled live from /v1/models, <code>gpt-image</code> and <code>stable-diffusion</code> models are enabled by default. Other models like <code>fal-ai/*</code> may need enablement on your account.</div>
 
         <label for="i-prompt">Prompt</label>
         <textarea id="i-prompt" placeholder="Describe the image…">A minimalist flat illustration of a small blue robot holding an umbrella in the rain, soft pastel sky, isometric perspective.</textarea>
@@ -584,6 +263,54 @@
           </div>
           <div class="image-output" id="i-body">
             <div class="placeholder">Your generated image will appear here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIO (fal async-invoke: TTS + text-to-audio) -->
+  <section class="panel" id="panel-audio">
+    <div class="eyebrow">Audio generation</div>
+    <h1>Same endpoint. Same key. Async Audio generation.</h1>
+    <p class="sub">Text-to-speech and text-to-audio use the same async pipeline on <code data-cfg="inferenceHost">—</code>: start a job, poll <code>/status</code>, then fetch the result URL — same pattern as image fal flows in the docs.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Request</h3>
+
+        <div class="row a-mode-row">
+          <label class="a-radio"><input type="radio" name="a-mode" value="generate" checked /> Text-to-audio</label>
+          <label class="a-radio"><input type="radio" name="a-mode" value="tts" /> Text-to-speech</label>
+        </div>
+
+        <label for="a-model">Model</label>
+        <select id="a-model"></select>
+        <div class="hint">Pulled live from /v1/models, for this async demo Fal-ai models are used to generate <code>text-to-audio</code> and <code>text-to-speech</code></div>
+
+        <label for="a-primary" id="a-label-primary">Prompt (describe the audio)</label>
+        <textarea id="a-primary" rows="4" placeholder="Describe music or paste speech…">Short ambient pad with soft synth and light rain texture.</textarea>
+
+        <div class="row" id="a-row-seconds">
+          <div>
+            <label for="a-seconds">Duration (seconds)</label>
+            <input type="number" id="a-seconds" value="30" min="5" max="120" />
+          </div>
+        </div>
+
+        <button class="primary" id="a-send">Generate audio</button>
+        <div class="hint">Async jobs can take a minute. This tab polls status until the file URL is ready.</div>
+      </div>
+
+      <div>
+        <div class="card result audio-result" id="a-result">
+          <div class="meta" id="a-meta">
+            <div>Phase · <strong>—</strong></div>
+            <div>Latency · <strong>—</strong></div>
+            <div>Model · <strong>—</strong></div>
+          </div>
+          <div class="audio-output" id="a-body">
+            <div class="placeholder">Audio player and job details will appear here.</div>
           </div>
         </div>
       </div>
@@ -668,6 +395,10 @@
       <dd>Same platform, same key — but the model draws instead of types. Response is a <code>b64_json</code> image you can show or save.</dd>
     </dl>
     <dl class="sb-term">
+      <dt>Async invoke (fal audio)</dt>
+      <dd><code>POST /v1/async-invoke</code> starts a background job and returns a <code>request_id</code>. Poll <code>GET …/async-invoke/&lt;id&gt;/status</code>, then <code>GET …/async-invoke/&lt;id&gt;</code> for the finished payload with a downloadable media URL.</dd>
+    </dl>
+    <dl class="sb-term">
       <dt>Multimodal</dt>
       <dd>Text, images, embeddings, and audio all on one inference platform. One bill, one SDK, one account.</dd>
     </dl>
@@ -687,6 +418,33 @@
 
 
 <script>
+  const SESSION_STORAGE_KEY = 'si_demo_session_token';
+  let appCfg = {};
+  let audioGenModelIds = [];
+  let audioTtsModelIds = [];
+
+  async function apiFetch(url, options = {}) {
+    const headers = { ...(options.headers || {}) };
+    const token = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const r = await fetch(url, { ...options, headers });
+    if (
+      r.status === 401 &&
+      url.startsWith('/api/') &&
+      url !== '/api/config' &&
+      url !== '/api/session'
+    ) {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      if (appCfg.accessRequired) {
+        const gate = document.getElementById('access-gate');
+        const so = document.getElementById('sign-out');
+        if (gate) gate.hidden = false;
+        if (so) so.hidden = true;
+      }
+    }
+    return r;
+  }
+
   // Curated fallback list used if /v1/models fails.
   const FALLBACK_MODELS = [
     'llama3.3-70b-instruct',
@@ -704,6 +462,59 @@
     'openai-gpt-oss-20b',
     'llama3.3-70b-instruct'
   ]);
+
+  /** Substrings (lowercase) — if the catalog model id matches any, treat as candidate for /v1/images/generations. */
+  const IMAGE_MODEL_ID_HINTS = ['gpt-image', 'fal-ai/', 'flux', 'sdxl', 'stable-diffusion'];
+
+  const FALLBACK_IMAGE_MODELS = [
+    'openai-gpt-image-1',
+    'openai-gpt-image-1.5',
+    'fal-ai/flux/schnell',
+    'fal-ai/fast-sdxl'
+  ];
+
+  const FALLBACK_AUDIO_GEN = ['fal-ai/stable-audio-25/text-to-audio'];
+  const FALLBACK_AUDIO_TTS = ['fal-ai/elevenlabs/tts/multilingual-v2'];
+
+  function partitionAudioModels(ids) {
+    const gen = [];
+    const tts = [];
+    const seenG = new Set();
+    const seenT = new Set();
+    for (const id of ids) {
+      if (!id) continue;
+      const l = String(id).toLowerCase();
+      if (l.includes('elevenlabs') || l.includes('multilingual-tts') || l.includes('/tts')) {
+        if (!seenT.has(id)) {
+          seenT.add(id);
+          tts.push(id);
+        }
+      } else if (l.includes('stable-audio') || l.includes('text-to-audio')) {
+        if (!seenG.has(id)) {
+          seenG.add(id);
+          gen.push(id);
+        }
+      }
+    }
+    gen.sort((a, b) => a.localeCompare(b));
+    tts.sort((a, b) => a.localeCompare(b));
+    return { gen, tts };
+  }
+
+  function filterLikelyImageModels(ids) {
+    const seen = new Set();
+    const out = [];
+    for (const id of ids) {
+      if (!id || seen.has(id)) continue;
+      const lower = String(id).toLowerCase();
+      if (IMAGE_MODEL_ID_HINTS.some((hint) => lower.includes(hint))) {
+        seen.add(id);
+        out.push(id);
+      }
+    }
+    out.sort((a, b) => a.localeCompare(b));
+    return out;
+  }
 
   // Tabs
   document.querySelectorAll('.tab').forEach(tab => {
@@ -728,7 +539,7 @@
   async function loadModels() {
     let ids = FALLBACK_MODELS;
     try {
-      const r = await fetch('/api/models');
+      const r = await apiFetch('/api/models');
       const j = await r.json();
       if (j?.data?.length) {
         ids = j.data.map(m => m.id).filter(Boolean).sort();
@@ -745,6 +556,30 @@
       const checked = COMPARE_DEFAULTS.has(id) ? 'checked' : '';
       return `<label><input type="checkbox" value="${escapeHtml(id)}" ${checked}/> ${escapeHtml(id)}</label>`;
     }).join('');
+
+    const iSelect = document.getElementById('i-model');
+    const prevImage = iSelect.value;
+    let imageIds = filterLikelyImageModels(ids);
+    if (!imageIds.length) {
+      imageIds = Array.isArray(appCfg.imageModels) && appCfg.imageModels.length ? [...appCfg.imageModels] : [...FALLBACK_IMAGE_MODELS];
+    }
+    iSelect.innerHTML = imageIds.map((id) => `<option value="${escapeHtml(id)}">${escapeHtml(id)}</option>`).join('');
+    const imagePreferred = ['openai-gpt-image-1', 'openai-gpt-image-1.5', imageIds[0]].find((x) => imageIds.includes(x));
+    if (imagePreferred) iSelect.value = imagePreferred;
+    else if (imageIds.includes(prevImage)) iSelect.value = prevImage;
+
+    const part = partitionAudioModels(ids);
+    audioGenModelIds = part.gen.length
+      ? part.gen
+      : Array.isArray(appCfg.audioGenModels) && appCfg.audioGenModels.length
+        ? [...appCfg.audioGenModels]
+        : [...FALLBACK_AUDIO_GEN];
+    audioTtsModelIds = part.tts.length
+      ? part.tts
+      : Array.isArray(appCfg.audioTtsModels) && appCfg.audioTtsModels.length
+        ? [...appCfg.audioTtsModels]
+        : [...FALLBACK_AUDIO_TTS];
+    refreshAudioModelSelect();
   }
 
   // Single send
@@ -765,7 +600,7 @@
         temperature: Number(document.getElementById('s-temp').value)
       };
       const t0 = performance.now();
-      const r = await fetch('/api/chat', {
+      const r = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -826,7 +661,7 @@
         max_completion_tokens: Number(document.getElementById('c-max').value) || 300,
         temperature: Number(document.getElementById('c-temp').value)
       };
-      const r = await fetch('/api/compare', {
+      const r = await apiFetch('/api/compare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -877,6 +712,28 @@
   function escapeHtml(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   }
+
+  function refreshAudioModelSelect() {
+    const modeEl = document.querySelector('input[name="a-mode"]:checked');
+    const mode = modeEl ? modeEl.value : 'generate';
+    const list = mode === 'tts' ? audioTtsModelIds : audioGenModelIds;
+    const sel = document.getElementById('a-model');
+    const prev = sel.value;
+    sel.innerHTML = list.map((id) => `<option value="${escapeHtml(id)}">${escapeHtml(id)}</option>`).join('');
+    if (list.includes(prev)) sel.value = prev;
+
+    const secRow = document.getElementById('a-row-seconds');
+    if (secRow) secRow.hidden = mode === 'tts';
+
+    const lab = document.getElementById('a-label-primary');
+    const ta = document.getElementById('a-primary');
+    if (lab) lab.textContent = mode === 'tts' ? 'Text to speak' : 'Prompt (describe the audio)';
+    if (ta) ta.placeholder = mode === 'tts' ? 'Enter words for the voice model…' : 'Describe music or sound…';
+  }
+
+  document.querySelectorAll('input[name="a-mode"]').forEach((r) => {
+    r.addEventListener('change', refreshAudioModelSelect);
+  });
 
   // -------- Router tab --------
 
@@ -990,7 +847,7 @@ print(expensive_items_eur)`
         temperature: Number(document.getElementById('r-temp').value)
       };
       const t0 = performance.now();
-      const r = await fetch('/api/chat', {
+      const r = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -1064,23 +921,6 @@ print(expensive_items_eur)`
     `).join('');
   }
 
-  loadModels();
-
-  // Load server config (env-backed) and populate any [data-cfg] element + the router input.
-  (async () => {
-    try {
-      const r = await fetch('/api/config');
-      const cfg = await r.json();
-      document.querySelectorAll('[data-cfg]').forEach(el => {
-        const key = el.dataset.cfg;
-        if (cfg && cfg[key]) el.textContent = cfg[key];
-      });
-      if (cfg?.defaultRouter) {
-        document.getElementById('r-router').value = cfg.defaultRouter;
-      }
-    } catch { /* leave placeholders */ }
-  })();
-
   // -------- Image tab --------
   document.getElementById('i-send').addEventListener('click', async () => {
     const btn = document.getElementById('i-send');
@@ -1098,7 +938,7 @@ print(expensive_items_eur)`
 
     const t0 = performance.now();
     try {
-      const r = await fetch('/api/image', {
+      const r = await apiFetch('/api/image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model, prompt, n, size })
@@ -1145,6 +985,156 @@ print(expensive_items_eur)`
     }
   });
 
+  function findHttpsMediaUrl(obj, depth = 0) {
+    if (depth > 14 || obj == null) return null;
+    if (typeof obj === 'string' && /^https:\/\//.test(obj)) return obj;
+    if (typeof obj === 'object') {
+      if (typeof obj.url === 'string' && /^https:\/\//.test(obj.url)) return obj.url;
+      for (const v of Object.values(obj)) {
+        const u = findHttpsMediaUrl(v, depth + 1);
+        if (u) return u;
+      }
+    }
+    return null;
+  }
+
+  function asyncJobSucceeded(status) {
+    return status === 'COMPLETED' || status === 'COMPLETE';
+  }
+
+  async function pollAsyncInvokeUntilDone(requestId) {
+    const maxMs = 180000;
+    const interval = 1500;
+    const t0 = Date.now();
+    while (Date.now() - t0 < maxMs) {
+      const r = await apiFetch(`/api/async-invoke/${encodeURIComponent(requestId)}/status`);
+      let j = {};
+      try {
+        j = await r.json();
+      } catch { /* ignore */ }
+      if (!r.ok) return { ok: false, statusRes: j, error: 'status_http_' + r.status };
+      if (j.status === 'FAILED' || j.error) return { ok: false, statusRes: j };
+      if (asyncJobSucceeded(j.status)) return { ok: true, statusRes: j };
+      await new Promise((res) => setTimeout(res, interval));
+    }
+    return { ok: false, error: 'timeout' };
+  }
+
+  // -------- Audio tab --------
+  document.getElementById('a-send').addEventListener('click', async () => {
+    const btn = document.getElementById('a-send');
+    const meta = document.getElementById('a-meta');
+    const body = document.getElementById('a-body');
+    const card = document.getElementById('a-result');
+    const mode = document.querySelector('input[name="a-mode"]:checked').value;
+    const model_id = document.getElementById('a-model').value;
+    const text = document.getElementById('a-primary').value.trim();
+
+    card.classList.remove('error');
+    btn.disabled = true;
+    btn.innerHTML = 'Working<span class="loading"></span>';
+    body.innerHTML = `<div class="placeholder">Starting job…<span class="loading"></span></div>`;
+
+    if (!text) {
+      card.classList.add('error');
+      meta.innerHTML = `<div>Phase · <strong>—</strong></div>`;
+      body.innerHTML = `<div class="placeholder" style="color: var(--err)">Enter prompt or text.</div>`;
+      btn.disabled = false;
+      btn.textContent = 'Generate audio';
+      return;
+    }
+
+    let input;
+    if (mode === 'tts') {
+      input = { text };
+    } else {
+      const seconds_total = Math.min(120, Math.max(5, Number(document.getElementById('a-seconds').value) || 30));
+      input = { prompt: text, seconds_total };
+    }
+
+    const payload = { model_id, input };
+    const tWall = performance.now();
+
+    try {
+      meta.innerHTML = `<div>Phase · <strong>invoke</strong></div><div>Latency · <strong>—</strong></div><div>Model · <strong>${escapeHtml(model_id)}</strong></div>`;
+
+      const r0 = await apiFetch('/api/async-invoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const start = await r0.json();
+      const invokeMs = Math.round(performance.now() - tWall);
+
+      if (!r0.ok || start.error) {
+        card.classList.add('error');
+        meta.innerHTML = `<div>Phase · <strong>invoke failed</strong></div><div>Latency · <strong>${invokeMs} ms</strong></div>`;
+        body.innerHTML = `<div class="placeholder" style="color: var(--err)">${escapeHtml(JSON.stringify(start.error || start, null, 2))}</div>`;
+        return;
+      }
+
+      const requestId = start.request_id;
+      if (!requestId) {
+        card.classList.add('error');
+        body.innerHTML = `<div class="placeholder" style="color: var(--err)">No request_id in response.</div>`;
+        return;
+      }
+
+      let output = start.output;
+      let finalPayload = start;
+
+      if (!asyncJobSucceeded(start.status) || output == null) {
+        meta.innerHTML = `<div>Phase · <strong>polling</strong></div><div>Latency · <strong>${invokeMs} ms</strong></div><div>Model · <strong>${escapeHtml(model_id)}</strong></div><div>Request · <strong>${escapeHtml(requestId)}</strong></div>`;
+        body.innerHTML = `<div class="placeholder">Queued — polling status…<span class="loading"></span></div>`;
+
+        const polled = await pollAsyncInvokeUntilDone(requestId);
+        if (!polled.ok) {
+          card.classList.add('error');
+          meta.innerHTML = `<div>Phase · <strong>failed</strong></div><div>Latency · <strong>${Math.round(performance.now() - tWall)} ms</strong></div>`;
+          body.innerHTML = `<div class="placeholder" style="color: var(--err)">${escapeHtml(JSON.stringify(polled.statusRes || { error: polled.error }, null, 2))}</div>`;
+          return;
+        }
+
+        const r1 = await apiFetch(`/api/async-invoke/${encodeURIComponent(requestId)}`);
+        finalPayload = await r1.json();
+        if (!r1.ok || finalPayload.error) {
+          card.classList.add('error');
+          meta.innerHTML = `<div>Phase · <strong>result fetch failed</strong></div><div>Latency · <strong>${Math.round(performance.now() - tWall)} ms</strong></div>`;
+          body.innerHTML = `<div class="placeholder" style="color: var(--err)">${escapeHtml(JSON.stringify(finalPayload.error || finalPayload, null, 2))}</div>`;
+          return;
+        }
+        output = finalPayload.output;
+      }
+
+      const wallMs = Math.round(performance.now() - tWall);
+      meta.innerHTML = `
+        <div>Phase · <strong>done</strong></div>
+        <div>Latency · <strong>${wallMs} ms</strong> (wall)</div>
+        <div>Model · <strong>${escapeHtml(model_id)}</strong></div>
+        <div>Request · <strong>${escapeHtml(requestId)}</strong></div>
+      `;
+
+      const url = findHttpsMediaUrl(output) || findHttpsMediaUrl(finalPayload);
+      if (url) {
+        const safe = escapeHtml(url);
+        body.innerHTML = `
+          <audio class="audio-player" controls src="${safe}"></audio>
+          <div class="audio-json"><pre class="embed-preview">${escapeHtml(JSON.stringify(output ?? finalPayload, null, 2))}</pre></div>
+          <div class="img-actions"><a href="${safe}" download="do-audio-${Date.now()}">download</a></div>
+        `;
+      } else {
+        body.innerHTML = `<pre class="embed-preview">${escapeHtml(JSON.stringify(finalPayload, null, 2))}</pre>`;
+      }
+    } catch (e) {
+      card.classList.add('error');
+      meta.innerHTML = `<div>Phase · <strong>error</strong></div>`;
+      body.innerHTML = `<div class="placeholder" style="color: var(--err)">${escapeHtml(String(e))}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Generate audio';
+    }
+  });
+
   // Sidebar toggle (single state, two controls: tabs-bar button + sidebar ✕)
   function setSidebarOpen(open) {
     document.body.classList.toggle('sidebar-closed', !open);
@@ -1157,6 +1147,105 @@ print(expensive_items_eur)`
     setSidebarOpen(document.body.classList.contains('sidebar-closed'));
   });
   document.getElementById('sb-toggle').addEventListener('click', () => setSidebarOpen(false));
+
+  (async function bootstrap() {
+    const gateEl = document.getElementById('access-gate');
+    const signOutBtn = document.getElementById('sign-out');
+    const errEl = document.getElementById('access-gate-error');
+
+    function applyServerCfg(cfg) {
+      document.querySelectorAll('[data-cfg]').forEach(el => {
+        const key = el.dataset.cfg;
+        if (cfg && cfg[key]) el.textContent = cfg[key];
+      });
+      if (cfg?.defaultRouter) {
+        document.getElementById('r-router').value = cfg.defaultRouter;
+      }
+    }
+
+    function showGate() {
+      gateEl.hidden = false;
+      signOutBtn.hidden = true;
+    }
+
+    function hideGate() {
+      gateEl.hidden = true;
+      if (appCfg.accessRequired) signOutBtn.hidden = false;
+    }
+
+    let cfgOk = false;
+    try {
+      const r = await fetch('/api/config');
+      const text = await r.text();
+      let parsed = {};
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        parsed = {};
+      }
+      const ct = (r.headers.get('content-type') || '').toLowerCase();
+      cfgOk =
+        r.ok &&
+        ct.includes('json') &&
+        parsed &&
+        typeof parsed.baseUrl === 'string' &&
+        parsed.baseUrl.startsWith('https://');
+      appCfg = cfgOk ? parsed : {};
+    } catch {
+      appCfg = {};
+    }
+
+    const warnEl = document.getElementById('backend-warning');
+    if (!cfgOk && warnEl) warnEl.hidden = false;
+
+    applyServerCfg(appCfg);
+
+    if (!cfgOk) {
+      return;
+    }
+
+    if (!appCfg.accessRequired) {
+      await loadModels();
+      return;
+    }
+
+    signOutBtn.hidden = true;
+
+    if (sessionStorage.getItem(SESSION_STORAGE_KEY)) {
+      hideGate();
+      await loadModels();
+    } else {
+      showGate();
+    }
+
+    document.getElementById('access-gate-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.textContent = '';
+      const pw = document.getElementById('access-password').value;
+      const r = await fetch('/api/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      let data = {};
+      try {
+        data = await r.json();
+      } catch { /* ignore */ }
+      if (!r.ok || !data.token) {
+        errEl.textContent = 'Invalid password.';
+        return;
+      }
+      sessionStorage.setItem(SESSION_STORAGE_KEY, data.token);
+      hideGate();
+      await loadModels();
+    });
+
+    signOutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      document.getElementById('access-password').value = '';
+      showGate();
+    });
+  })();
 </script>
 
 </body>
