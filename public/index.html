@@ -214,13 +214,8 @@
         <h3>Request</h3>
 
         <label for="i-model">Model</label>
-        <select id="i-model">
-          <option value="openai-gpt-image-1">openai-gpt-image-1</option>
-          <option value="openai-gpt-image-1.5">openai-gpt-image-1.5</option>
-          <option value="fal-ai/flux/schnell">fal-ai/flux/schnell</option>
-          <option value="fal-ai/fast-sdxl">fal-ai/fast-sdxl</option>
-        </select>
-        <div class="hint"><code>gpt-image</code> models ship enabled by default. <code>fal-ai/*</code> may need enablement on your account.</div>
+        <select id="i-model"></select>
+        <div class="hint"><code>gpt-image</code> and <code>stable-diffusion</code> models ship enabled by default. Other models like <code>fal-ai/*</code> may need enablement on your account.</div>
 
         <label for="i-prompt">Prompt</label>
         <textarea id="i-prompt" placeholder="Describe the image…">A minimalist flat illustration of a small blue robot holding an umbrella in the rain, soft pastel sky, isometric perspective.</textarea>
@@ -406,6 +401,31 @@
     'llama3.3-70b-instruct'
   ]);
 
+  /** Substrings (lowercase) — if the catalog model id matches any, treat as candidate for /v1/images/generations. */
+  const IMAGE_MODEL_ID_HINTS = ['gpt-image', 'fal-ai/', 'flux', 'sdxl', 'stable-diffusion'];
+
+  const FALLBACK_IMAGE_MODELS = [
+    'openai-gpt-image-1',
+    'openai-gpt-image-1.5',
+    'fal-ai/flux/schnell',
+    'fal-ai/fast-sdxl'
+  ];
+
+  function filterLikelyImageModels(ids) {
+    const seen = new Set();
+    const out = [];
+    for (const id of ids) {
+      if (!id || seen.has(id)) continue;
+      const lower = String(id).toLowerCase();
+      if (IMAGE_MODEL_ID_HINTS.some((hint) => lower.includes(hint))) {
+        seen.add(id);
+        out.push(id);
+      }
+    }
+    out.sort((a, b) => a.localeCompare(b));
+    return out;
+  }
+
   // Tabs
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -446,6 +466,17 @@
       const checked = COMPARE_DEFAULTS.has(id) ? 'checked' : '';
       return `<label><input type="checkbox" value="${escapeHtml(id)}" ${checked}/> ${escapeHtml(id)}</label>`;
     }).join('');
+
+    const iSelect = document.getElementById('i-model');
+    const prevImage = iSelect.value;
+    let imageIds = filterLikelyImageModels(ids);
+    if (!imageIds.length) {
+      imageIds = Array.isArray(appCfg.imageModels) && appCfg.imageModels.length ? [...appCfg.imageModels] : [...FALLBACK_IMAGE_MODELS];
+    }
+    iSelect.innerHTML = imageIds.map((id) => `<option value="${escapeHtml(id)}">${escapeHtml(id)}</option>`).join('');
+    const imagePreferred = ['openai-gpt-image-1', 'openai-gpt-image-1.5', imageIds[0]].find((x) => imageIds.includes(x));
+    if (imagePreferred) iSelect.value = imagePreferred;
+    else if (imageIds.includes(prevImage)) iSelect.value = prevImage;
   }
 
   // Single send
